@@ -12,11 +12,11 @@ const fs = require("fs");
 // });
 
 const amazon = new Amazon();
-amazon.setSpotInstanceCount(0)
-  .then(() => amazon.shutdown());
+// amazon.setSpotInstanceCount(0)
+//   .then(() => amazon.shutdown());
 //process.exit(0);
-// amazon.createStockfishTasks(2)
-//     .then(() => console.log("here"))
-//     .then(() => amazon.shutdown())
-//     .then(() => console.log("end!"));
+amazon.createStockfishTasks(2)
+    .then(() => console.log("here"))
+    .then(() => amazon.shutdown())
+    .then(() => console.log("end!"));
 
