@@ -5,7 +5,7 @@ const Amazon = require('./amazon');
 
 const amazon = new Amazon();
 amazon.setSpotInstanceCount(0)
-    .then(() => amazon.shutdown());
+   .then(() => amazon.shutdown());
 //process.exit(0);
 // amazon.createStockfishTasks(2)
 //     .then(() => console.log("here"))
