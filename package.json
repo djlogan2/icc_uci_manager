@@ -1,0 +1,10 @@
+{
+  "name": "stockfish-manager",
+  "description": "Stockfish manager",
+  "version": "0.0.1",
+  "main": "manager.js",
+  "dependencies": {
+    "aws-sdk": "2.693.0",
+    "moo": "0.5.1"
+  }
+}
