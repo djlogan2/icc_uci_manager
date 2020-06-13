@@ -2,14 +2,14 @@ const Amazon = require('./amazon');
 const Parser = require("./parser");
 const fs = require("fs");
 
-fs.readFile("/Users/davidlogan/workspace/icc/pgns/djlogan.pgn", (err, data) => {
-    const parser = new Parser();
-    parser.feed(data.toString());
-    const movelist = parser.gamelist.map(game => {
-        return game.variations.movelist.map(variation => variation.move).filter(move => !!move);
-    });
-    console.log(movelist);
-});
+// fs.readFile("/Users/davidlogan/workspace/icc/pgns/djlogan.pgn", (err, data) => {
+//     const parser = new Parser();
+//     parser.feed(data.toString());
+//     const movelist = parser.gamelist.map(game => {
+//         return game.variations.movelist.map(variation => variation.move).filter(move => !!move);
+//     });
+//     console.log(movelist);
+// });
 
 const amazon = new Amazon();
 amazon.setSpotInstanceCount(0)
