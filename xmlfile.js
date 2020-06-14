@@ -64,7 +64,7 @@ const xmlstart =
     "<MaxTime>4</MaxTime>" +
     "<HashSize>4</HashSize>" +
     "<BookDepth>4</BookDepth>" +
-    "<PlayerName>{playername}</PlayerName>" +
+    "<PlayerName/>" +
     "</EngineSettings>";
 const xmlgamestart =
     "<Game>" +
