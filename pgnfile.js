@@ -28,7 +28,7 @@ class PGNFile {
         game.forEach(move => {
             if(white)
                 moveline += moveno + ". ";
-            moveline += move.move + " q{" + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+            moveline += move.move + " {" + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
             if(moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");
                 data += moveline.substr(0, idx) + "\n";
