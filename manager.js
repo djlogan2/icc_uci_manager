@@ -1,6 +1,5 @@
 const Amazon = require('./amazon');
 const Parser = require("./parser");
-const Task = require("./task");
 const XMLFile = require("./xmlfile");
 const fs = require("fs");
 const sem = require("semaphore")(1);
@@ -34,10 +33,9 @@ async function getGames() {
 }
 
 async function getAmazonReady() {
-    amazon.createStockfishTasks(games.length);
     console.log("Starting up Amazon");
-    const task = new Task("127.0.0.1", "1234");
-    return [task];
+    const taskArray = await amazon.createStockfishTasks(games.length);
+    return taskArray;
 }
 
 async function shutdownAmazon() {
@@ -106,4 +104,5 @@ async function doit() {
     }
 }
 
+//amazon.setSpotInstanceCount(0);
 doit();

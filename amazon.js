@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const Task = require("./task");
 
 class Amazon {
     constructor() {
@@ -38,7 +39,6 @@ class Amazon {
             });
 
             const newcount = count - this.task_count;
-
             const tencount = Math.floor(newcount / 10);
             const onecount = newcount - (10 * tencount);
 
@@ -55,6 +55,7 @@ class Amazon {
                 console.log(data);
             }
             console.log("Tasks started");
+            return this.ip_addresses.map(ip => new Task(ip, "3010"));
         } catch (e) {
             console.log("promise failed");
             console.log(e);
