@@ -6,6 +6,7 @@ class Amazon {
         AWS.config.update({region: "us-east-1"});
         this.ecs = new AWS.ECS();
         this.ec2 = new AWS.EC2();
+        this.max_tasks = 100;
         this.cluster = 'stockfish2';
         this.service = 'stockfish';
         this.task_definition = 'stockfish';
@@ -25,6 +26,7 @@ class Amazon {
     }
 
     async createStockfishTasks(count) {
+        count = (count > this.max_tasks ? this.max_tasks : count);
         try {
             console.log("Setting up " + count + " tasks. Setting instance count.");
             await this.setSpotInstanceCount(count);

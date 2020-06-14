@@ -1,6 +1,8 @@
 const Amazon = require('./amazon');
 const Parser = require("./parser");
 const XMLFile = require("./xmlfile");
+const PGNFile = require("./pgnfile");
+const Task = require("./task");
 const fs = require("fs");
 const sem = require("semaphore")(1);
 
@@ -15,15 +17,19 @@ const sem = require("semaphore")(1);
 //   if no next game, start decrementing active tasks
 //   if active tasks == 0, shutdown amazon
 
+const pgn_filename = process.argv[2];
+
+let local_test = false;
 let active_tasks = 0;
 let taskArray;
 let games;
-const xmlfile = new XMLFile("xmlfile.xml");
-const amazon = new Amazon();
+const xmlfile = new XMLFile(pgn_filename + "-analyzed.xml");
+const pgnfile = new PGNFile(pgn_filename + "-analyzied.pgn");
+let amazon;// = new Amazon();
 
 async function getGames() {
     return new Promise(resolve => {
-        fs.readFile("/Users/davidlogan/workspace/icc/pgns/djlogan.pgn", (err, data) => {
+        fs.readFile(pgn_filename, (err, data) => {
             const parser = new Parser();
             parser.feed(data.toString());
             games = parser.gamelist;
@@ -33,14 +39,24 @@ async function getGames() {
 }
 
 async function getAmazonReady() {
-    console.log("Starting up Amazon");
-    const taskArray = await amazon.createStockfishTasks(games.length);
-    return taskArray;
+    if(local_test) {
+        console.log("Local test");
+        const task = new Task("127.0.0.1", "1234");
+        return [task];
+    } else {
+        console.log("Starting up Amazon");
+        amazon = new Amazon();
+        return await amazon.createStockfishTasks(games.length);
+    }
 }
 
 async function shutdownAmazon() {
-    console.log("Shutting down amazon");
-    amazon.setSpotInstanceCount(0);
+    if(!local_test) {
+        console.log("Shutting down amazon");
+        await amazon.setSpotInstanceCount(0);
+        return amazon.shutdown();
+    } else
+        return Promise.resolve();
 }
 
 async function getNextAvailableGame() {
@@ -67,7 +83,13 @@ async function writeXMLFile(tags, game_result) {
 
 async function writePGNFile(tags, game_result) {
     console.log("Writing pgn for game");
-    return Promise.resolve();
+    return new Promise(resolve => {
+        console.log("Writing PGN for game");
+        pgnfile.writeGame(tags, game_result, () => {
+            console.log("PGN for game written");
+            resolve();
+        });
+    });
 }
 
 async function handleGameResult(tags, game_result) {
@@ -79,7 +101,7 @@ async function handleGameResult(tags, game_result) {
     const game = await getNextAvailableGame();
     if(!game) {
         console.log("Tasks are dwindling, current=" + active_tasks);
-        if(--active_tasks) {
+        if(--active_tasks === 0) {
             console.log("All tasks complete, shutting down");
             xmlfile.endFile();
             await shutdownAmazon();
@@ -104,5 +126,5 @@ async function doit() {
     }
 }
 
-//amazon.setSpotInstanceCount(0);
+//(new Amazon()).setSpotInstanceCount(0);
 doit();
