@@ -58,12 +58,12 @@ const xmlstart =
     "<Games>" +
     "<EngineSettings>" +
     "<EnginePath>xxx</EnginePath>" +
-    "<NumVariations>999</NumVariations>" +
-    "<SearchDepth>999</SearchDepth>" +
-    "<MinTime>9999</MinTime>" +
-    "<MaxTime>9999</MaxTime>" +
-    "<HashSize>999</HashSize>" +
-    "<BookDepth>999</BookDepth>" +
+    "<NumVariations>4</NumVariations>" +
+    "<SearchDepth>4</SearchDepth>" +
+    "<MinTime>4</MinTime>" +
+    "<MaxTime>4</MaxTime>" +
+    "<HashSize>4</HashSize>" +
+    "<BookDepth>4</BookDepth>" +
     "<PlayerName>{playername}</PlayerName>" +
     "</EngineSettings>";
 const xmlgamestart =
