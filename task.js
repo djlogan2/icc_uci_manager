@@ -11,6 +11,7 @@ class Task {
             const _movelist = game.variations.movelist.map(variation => variation.move).filter(move => !!move);
             const movelist = JSON.stringify(_movelist);
             const options = {
+                timeout:  60 /* minutes */ * 60 /* seconds */ * 1000 /* ms */,
                 host: this.ip,
                 port: this.port,
                 path: "/",
