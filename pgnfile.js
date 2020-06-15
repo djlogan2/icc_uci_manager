@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Queue = require("sync-queue");
+const Chess = require("chess.js").Chess;
 
 class PGNFile {
     constructor(filename) {
@@ -18,6 +19,7 @@ class PGNFile {
 
     writeGame(tags, game, callback) {
         let data = "";
+        const chess = new Chess();
 
         Object.keys(tags).forEach(tag => data += "[" + tag + " \"" + tags[tag] + "\"]\n");
         data += "\n";
@@ -26,9 +28,21 @@ class PGNFile {
         let white = 1;
         let moveno = 1;
         game.forEach(move => {
+            let prefix = "";
             if(white)
-                moveline += moveno + ". ";
-            moveline += move.move + " {" + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+                prefix += moveno + ". ";
+            else
+                prefix += moveno + (white ? ". " : ". ... ");
+            moveline += prefix;
+            try {
+                moveline += move.move + " ";
+            } catch(e) {
+                console.log("fuck");
+            }
+            const temp_chess = new Chess(chess.fen());
+            const cmove = temp_chess.move(move.lines[0].pv.split(" ")[0], {sloppy: true});
+            moveline +=
+                " {" + prefix + " " + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
             if(moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");
                 data += moveline.substr(0, idx) + "\n";
@@ -36,7 +50,9 @@ class PGNFile {
             }
             white = (white === 0 ? 1 : 0);
             moveno += white;
+            chess.move(move.move);
         });
+
         if(moveline && moveline.length) {
             if(moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");

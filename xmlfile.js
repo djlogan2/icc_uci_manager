@@ -39,7 +39,7 @@ class XMLFile {
     }
 
     endFile() {
-        this.writePart(xmlend);
+        return new Promise(resolve => this.writePart(xmlend, resolve));
     }
 
     replaceAll(str,mapObj){
@@ -81,7 +81,6 @@ const xmlmovestart =
     "<MovePlayed>{played}</MovePlayed>" +
     "<Moves>";
 const xmlpvstart =
-    "<Move>" +
     "<Move>{san}</Move>" +
     "<Depth>{depth}</Depth>" +
     "<Time>{time}</Time>" +
