@@ -19,12 +19,12 @@ const sem = require("semaphore")(1);
 
 const pgn_filename = process.argv[2];
 
-let local_test = true;
+let local_test = false;
 let active_tasks = 0;
 let taskArray;
 let games;
 const xmlfile = new XMLFile(pgn_filename + "-analyzed.xml");
-const pgnfile = new PGNFile(pgn_filename + "-analyzied.pgn");
+const pgnfile = new PGNFile(pgn_filename + "-analyzed.pgn");
 let amazon;// = new Amazon();
 
 async function getGames() {
