@@ -53,6 +53,8 @@ class PGNFile {
             chess.move(move.move);
         });
 
+        moveline += " " + tags.Result;
+
         if(moveline && moveline.length) {
             if(moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");

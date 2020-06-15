@@ -24,7 +24,7 @@ class XMLFile {
             let idx = game[x].lines.findIndex(line => line.pv.split(" ")[0] === game[x].alg);
             if(idx === -1) {
                 const nextline = game[x + 1] ? {...game[x + 1].lines[0]} : null;
-                if (nextline) {
+                if (!!nextline) {
                     nextline.pv = game[x].alg;
                     nextline.score *= -1;
                     game[x].lines.push(nextline);
@@ -45,10 +45,10 @@ class XMLFile {
                 data += this.replaceAll(xmlpvstart, {san: line.pv.split(" ")[0], depth: line.depth, time: line.time, score: line.score});
                 data += xmlpvend;
             });
-            if(idx === move.lines.length) {
-                data += this.replaceAll(xmlpvstart, {san: move.alg, depth: 0, time: 0, score: 0});
-                data += xmlpvend;
-            }
+            // if(idx === move.lines.length) {
+            //     data += this.replaceAll(xmlpvstart, {san: move.alg, depth: 0, time: 0, score: 0});
+            //     data += xmlpvend;
+            // }
             data += xmlmoveend;
             white = (white === 0 ? 1 : 0);
         });
