@@ -32,6 +32,7 @@ class XMLFile {
                 data += xmlpvend;
             });
             data += xmlmoveend;
+            white = (white === 0 ? 1 : 0);
         });
         data += xmlgameend;
         this.writePart(data, callback);
@@ -81,6 +82,7 @@ const xmlmovestart =
     "<MovePlayed>{played}</MovePlayed>" +
     "<Moves>";
 const xmlpvstart =
+    "<Move>" +
     "<Move>{san}</Move>" +
     "<Depth>{depth}</Depth>" +
     "<Time>{time}</Time>" +

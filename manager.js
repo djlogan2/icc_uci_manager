@@ -19,7 +19,7 @@ const sem = require("semaphore")(1);
 
 const pgn_filename = process.argv[2];
 
-let local_test = true;
+let local_test = false;
 let active_tasks = 0;
 let taskArray;
 let games;
@@ -51,7 +51,7 @@ async function getAmazonReady() {
 }
 
 async function shutdownAmazon() {
-    return Promose.resolve();
+    return Promise.resolve();
     // if(!local_test) {
     //     console.log("Shutting down amazon");
     //     await amazon.setSpotInstanceCount(0);

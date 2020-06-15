@@ -42,7 +42,7 @@ class PGNFile {
             const temp_chess = new Chess(chess.fen());
             const cmove = temp_chess.move(move.lines[0].pv.split(" ")[0], {sloppy: true});
             moveline +=
-                " {" + prefix + " " + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+                " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
             if(moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");
                 data += moveline.substr(0, idx) + "\n";
