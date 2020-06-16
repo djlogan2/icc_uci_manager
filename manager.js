@@ -33,6 +33,8 @@ async function getGames() {
             const parser = new Parser();
             parser.feed(data.toString());
             games = parser.gamelist;
+            for(let x = 0 ; x < games.length ; x++)
+                games[x].tags["OrigIndex"] = x;
             resolve(games);
         });
     });

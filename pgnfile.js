@@ -27,27 +27,38 @@ class PGNFile {
         let moveline = "";
         let white = 1;
         let moveno = 1;
+        let comment;
         game.forEach(move => {
             let prefix = "";
             if(white)
                 prefix += moveno + ". ";
-            else
+            else if(comment)
                 prefix += moveno + (white ? ". " : ". ... ");
+            else
+                prefix = " ";
             moveline += prefix;
+
             try {
                 moveline += move.move + " ";
             } catch(e) {
-                console.log("fuck");
+                console.log(e);
             }
-            const temp_chess = new Chess(chess.fen());
-            const cmove = temp_chess.move(move.lines[0].pv.split(" ")[0], {sloppy: true});
-            moveline +=
-                " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
-            if(moveline.length > 255) {
-                const idx = moveline.lastIndexOf(" ");
-                data += moveline.substr(0, idx) + "\n";
-                moveline = moveline.substr(idx + 1);
-            }
+
+            if(move.lines[0].score > 100) {
+                comment = true;
+                const temp_chess = new Chess(chess.fen());
+                const cmove = temp_chess.move(move.lines[0].pv.split(" ")[0], {sloppy: true});
+                //moveline +=
+                //    " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+                moveline +=
+                    " {[%eval " + move.lines[0].score + "," + move.lines[0].depth + "]} ";
+                if (moveline.length > 255) {
+                    const idx = moveline.lastIndexOf(" ");
+                    data += moveline.substr(0, idx) + "\n";
+                    moveline = moveline.substr(idx + 1);
+                }
+            } else
+                comment = false;
             white = (white === 0 ? 1 : 0);
             moveno += white;
             chess.move(move.move);

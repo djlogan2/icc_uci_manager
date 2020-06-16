@@ -36,19 +36,15 @@ class XMLFile {
 
         game.forEach(move => {
             let idx = move.lines.findIndex(line => line.pv.split(" ")[0] === move.alg);
-            if(idx === -1)
-                idx = move.lines.length;
-            else
-                idx++;
+            if(idx === -1) {
+                console.log("MOVE NOT FOUND -- THIS SHOULD NEVER HAPPEN");
+                idx = move.lines.length - 1;
+            }
             data += this.replaceAll(xmlmovestart, {"white": white, "played": idx});
             move.lines.forEach(line => {
                 data += this.replaceAll(xmlpvstart, {san: line.pv.split(" ")[0], depth: line.depth, time: line.time, score: line.score});
                 data += xmlpvend;
             });
-            // if(idx === move.lines.length) {
-            //     data += this.replaceAll(xmlpvstart, {san: move.alg, depth: 0, time: 0, score: 0});
-            //     data += xmlpvend;
-            // }
             data += xmlmoveend;
             white = (white === 0 ? 1 : 0);
         });
