@@ -62,7 +62,7 @@ class PGNFile {
                 const temp_chess = new Chess(chess.fen());
                 const cmove = temp_chess.move(move.best_move, {sloppy: true});
                 moveline +=
-                    " {{Stockfish 9 64: " + cmove.san + " " + (parseFloat(move.score_before_move) / 100.0).toFixed(2) + "/" + move.depth_before_move + "} ";
+                    " {Stockfish 9 64: " + cmove.san + " " + (parseFloat(move.score_before_move) / 100.0).toFixed(2) + "/" + move.depth_before_move + "} ";
             }
             if (moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");
