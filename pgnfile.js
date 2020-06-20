@@ -40,8 +40,10 @@ class PGNFile {
                 best_move: _game[x].lines[0].pv.split(" ")[0],
                 blunder: _game[x].lines[0].score - (nextmove ? -nextmove.lines[0].score : 0) >= 100
             });
+            white = (white === 1 ? 0 : 1);
         }
 
+        white = 1;
         pgngame.forEach(move => {
             let prefix = "";
             if (white)
