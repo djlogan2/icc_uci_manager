@@ -38,7 +38,7 @@ class PGNFile {
                 score_after_move: nextmove ? -nextmove.lines[0].score : 0,
                 depth_after_move: nextmove ? nextmove.lines[0].depth : 0,
                 best_move: _game[x].lines[0].pv.split(" ")[0],
-                blunder: _game[x].lines[0].score - (nextmove ? nextmove.lines[0].score : 0) >= 100
+                blunder: _game[x].lines[0].score - (nextmove ? -nextmove.lines[0].score : 0) >= 100
             });
         }
 
@@ -56,8 +56,6 @@ class PGNFile {
                 console.log(e);
             }
 
-            //moveline +=
-            //    " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
             moveline +=
                 " {[%eval " + move.score_after_move + "," + move.depth_after_move + "]} ";
             if(move.blunder) {
