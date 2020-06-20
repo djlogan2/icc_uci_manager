@@ -35,7 +35,7 @@ class PGNFile {
                 move: _game[x].move,
                 score_before_move: _game[x].lines[0].score * ( white ? 1 : -1),
                 depth_before_move: _game[x].lines[0].depth,
-                score_after_move: (nextmove ? -nextmove.lines[0].score : 0) * (white ? 1 : -1),
+                score_after_move: (nextmove ? nextmove.lines[0].score : 0) * (white ? -1 : 1),
                 depth_after_move: nextmove ? nextmove.lines[0].depth : 0,
                 best_move: _game[x].lines[0].pv.split(" ")[0],
                 blunder: _game[x].lines[0].score - (nextmove ? -nextmove.lines[0].score : 0) >= 100
