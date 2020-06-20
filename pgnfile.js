@@ -10,14 +10,15 @@ class PGNFile {
 
     writePart(part, callback) {
         fs.appendFile(this.filename, part, err => {
-            if(err) console.log(err);
+            if (err) console.log(err);
             this.queue.next();
-            if(typeof callback === "function")
+            if (typeof callback === "function")
                 callback();
         });
     }
 
-    writeGame(tags, game, callback) {
+    writeGame(tags, _game, callback) {
+        const pgngame = [];
         let data = "";
         const chess = new Chess();
 
@@ -27,38 +28,49 @@ class PGNFile {
         let moveline = "";
         let white = 1;
         let moveno = 1;
-        let comment;
-        game.forEach(move => {
+
+        for(let x = 0 ; x < _game.length ; x++) {
+            const nextmove = _game[x + 1];
+            pgngame.push({
+                move: _game[x].move,
+                score_before_move: _game[x].lines[0].score,
+                depth_before_move: _game[x].lines[0].depth,
+                score_after_move: nextmove ? -nextmove.lines[0].score : 0,
+                depth_after_move: nextmove ? nextmove.lines[0].depth : 0,
+                best_move: _game[x].lines[0].pv.split(" ")[0],
+                blunder: _game[x].lines[0].score - (nextmove ? nextmove.lines[0].score : 0) >= 100
+            });
+        }
+
+        pgngame.forEach(move => {
             let prefix = "";
-            if(white)
+            if (white)
                 prefix += moveno + ". ";
-            else if(comment)
-                prefix += moveno + (white ? ". " : ". ... ");
             else
-                prefix = " ";
+                prefix += moveno + (white ? ". " : ". ... ");
             moveline += prefix;
 
             try {
                 moveline += move.move + " ";
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
 
-            if(move.lines[0].score > 100) {
-                comment = true;
+            //moveline +=
+            //    " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+            moveline +=
+                " {[%eval " + move.score_after_move + "," + move.depth_after_move + "]} ";
+            if(move.blunder) {
                 const temp_chess = new Chess(chess.fen());
-                const cmove = temp_chess.move(move.lines[0].pv.split(" ")[0], {sloppy: true});
-                //moveline +=
-                //    " {" + prefix + cmove.san + " " + (parseFloat(move.lines[0].score) / 100.0).toFixed(2) + " " + (parseFloat(move.lines[move.lines.length - 1].score) / 100.0).toFixed(2) + "/" + move.lines[0].depth + "} ";
+                const cmove = temp_chess.move(move.best_move, {sloppy: true});
                 moveline +=
-                    " {[%eval " + move.lines[0].score + "," + move.lines[0].depth + "]} ";
-                if (moveline.length > 255) {
-                    const idx = moveline.lastIndexOf(" ");
-                    data += moveline.substr(0, idx) + "\n";
-                    moveline = moveline.substr(idx + 1);
-                }
-            } else
-                comment = false;
+                    " {{Stockfish 9 64: " + cmove.san + " " + (parseFloat(move.score_before_move) / 100.0).toFixed(2) + "/" + move.depth_before_move + "} ";
+            }
+            if (moveline.length > 255) {
+                const idx = moveline.lastIndexOf(" ");
+                data += moveline.substr(0, idx) + "\n";
+                moveline = moveline.substr(idx + 1);
+            }
             white = (white === 0 ? 1 : 0);
             moveno += white;
             chess.move(move.move);
@@ -66,13 +78,13 @@ class PGNFile {
 
         moveline += " " + tags.Result;
 
-        if(moveline && moveline.length) {
-            if(moveline.length > 255) {
+        if (moveline && moveline.length) {
+            if (moveline.length > 255) {
                 const idx = moveline.lastIndexOf(" ");
                 data += moveline.substr(0, idx) + "\n";
                 moveline = moveline.substr(idx + 1);
             }
-            if(moveline.length)
+            if (moveline.length)
                 data += moveline;
         }
         data += "\n";
@@ -82,11 +94,13 @@ class PGNFile {
     endFile() {
     }
 
-    replaceAll(str,mapObj){
+    replaceAll(str, mapObj) {
         const clone = {};
-        Object.keys(mapObj).forEach(key => {clone["{" + key + "}"] = mapObj[key]});
-        var re = new RegExp(Object.keys(clone).join("|"),"gi");
-        return str.replace(re, function(matched){
+        Object.keys(mapObj).forEach(key => {
+            clone["{" + key + "}"] = mapObj[key]
+        });
+        var re = new RegExp(Object.keys(clone).join("|"), "gi");
+        return str.replace(re, function (matched) {
             return clone[matched.toLowerCase()];
         });
     }
