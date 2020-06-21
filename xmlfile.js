@@ -26,6 +26,8 @@ class XMLFile {
                 const nextline = game[x + 1] ? {...game[x + 1].lines[0]} : null;
                 if (!!nextline) {
                     nextline.pv = game[x].alg;
+                    if(nextline.type === "mate" )
+                        nextline.score = 32768 - Math.abs(nextline.score) * (nextline.score < 0 ? -1 : 0);
                     nextline.score *= -1;
                     game[x].lines.push(nextline);
                 } else {
