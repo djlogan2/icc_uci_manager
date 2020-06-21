@@ -34,7 +34,7 @@ class PGNFile {
             let mate_before_move = _game[x].lines[0].score.unit === "mate";
             let score_before_move = _game[x].lines[0].score.value;
             let mate_after_move = _game[x].lines[0].score.unit === "mate";
-            let score_after_move = (nextmove ? -nextmove.lines[0].score.value : 0);
+            let score_after_move = (nextmove ? nextmove.lines[0].score.value : 0);
 
             if(mate_before_move)
                 score_before_move = ((score_before_move < 0 ? -1 : 1) * 32768) - score_before_move;
@@ -50,7 +50,7 @@ class PGNFile {
                 score_after_move: score_after_move,
                 depth_after_move: nextmove ? nextmove.lines[0].depth : 0,
                 best_move: _game[x].lines[0].pv.split(" ")[0],
-                blunder: score_before_move - score_after_move >= 100
+                blunder: (white && score_before_move - score_after_move >= 100) || (!white && score_before_move - score_after_move <= -100)
             });
             white = (white === 1 ? 0 : 1);
         }
