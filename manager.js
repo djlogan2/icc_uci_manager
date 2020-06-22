@@ -19,7 +19,7 @@ const sem = require("semaphore")(1);
 
 const pgn_filename = process.argv[2];
 
-let local_test = false;
+let local_test = process.env.LOCALTEST === "true";
 let active_tasks = 0;
 let taskArray;
 let games;
