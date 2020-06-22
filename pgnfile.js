@@ -31,6 +31,7 @@ class PGNFile {
 
         for(let x = 0 ; x < _game.length ; x++) {
             const nextmove = _game[x + 1];
+            let book = _game[x].lines[0].score.unit === "book";
             let mate_before_move = _game[x].lines[0].score.unit === "mate";
             let score_before_move = _game[x].lines[0].score.value;
             let mate_after_move = _game[x].lines[0].score.unit === "mate";
@@ -43,6 +44,7 @@ class PGNFile {
 
             pgngame.push({
                 move: _game[x].move,
+                book: book,
                 mate_before_move: mate_before_move,
                 score_before_move: score_before_move,
                 depth_before_move: _game[x].lines[0].depth,
@@ -70,8 +72,11 @@ class PGNFile {
                 console.log(e);
             }
 
-            moveline +=
-                " {[%eval " + move.score_after_move + "," + move.depth_after_move + "]} ";
+            if(move.book)
+                moveline += " {Book move} "
+            else
+                moveline +=
+                    " {[%eval " + move.score_after_move + "," + move.depth_after_move + "]} ";
             if(move.blunder) {
                 const temp_chess = new Chess(chess.fen());
                 const cmove = temp_chess.move(move.best_move, {sloppy: true});

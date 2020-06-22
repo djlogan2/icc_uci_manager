@@ -27,7 +27,7 @@ class XMLFile {
                 if (!!nextline) {
                     nextline.pv = game[x].alg;
                     if(nextline.type === "mate" )
-                        nextline.score = 32768 - Math.abs(nextline.score) * (nextline.score < 0 ? -1 : 0);
+                        nextline.score = 32768 - Math.abs(nextline.score.value) * (nextline.score.value < 0 ? -1 : 0);
                     nextline.score *= -1;
                     game[x].lines.push(nextline);
                 } else {
@@ -44,7 +44,7 @@ class XMLFile {
             }
             data += this.replaceAll(xmlmovestart, {"white": white, "played": idx});
             move.lines.forEach(line => {
-                data += this.replaceAll(xmlpvstart, {san: line.pv.split(" ")[0], depth: line.depth, time: line.time, score: line.score});
+                data += this.replaceAll(xmlpvstart, {san: line.pv.split(" ")[0], depth: line.depth, time: line.time, score: line.score.value});
                 data += xmlpvend;
             });
             data += xmlmoveend;
