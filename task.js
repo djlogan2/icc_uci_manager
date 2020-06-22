@@ -6,10 +6,11 @@ class Task {
         this.port = port;
     }
 
-    sigh(game) {
+    sigh(seconds_per_game, game) {
         return new Promise(resolve => {
             const _movelist = game.variations.movelist.map(variation => variation.move).filter(move => !!move);
-            const movelist = JSON.stringify(_movelist);
+            const request = JSON.stringify({go_options: {totaltime: seconds_per_game * 1000}, game: _movelist});
+            //const movelist = JSON.stringify(_movelist);
             const options = {
                 timeout:  4 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* ms */,
                 host: this.ip,
@@ -18,7 +19,7 @@ class Task {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Content-Length": Buffer.byteLength(movelist)
+                    "Content-Length": Buffer.byteLength(request)
                 }
             };
             const req = http.request(options, res => {
@@ -31,15 +32,15 @@ class Task {
                     resolve(engine_response);
                 });
             });
-            req.write(movelist);
+            req.write(request);
             req.end();
         });
     }
 
-    async processgame(firstgame, callback) {
+    async processgame(seconds_per_game, firstgame, callback) {
         let game = firstgame;
         do {
-            const engine_response = await this.sigh(game);
+            const engine_response = await this.sigh(seconds_per_game, game);
             game = await callback(engine_response);
         } while(!!game);
     }

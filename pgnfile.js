@@ -29,7 +29,7 @@ class PGNFile {
         let white = 1;
         let moveno = 1;
 
-        for(let x = 0 ; x < _game.length ; x++) {
+        for(let x = 0 ; x < _game.length  - 1; x++) {
             const nextmove = _game[x + 1];
             let book = _game[x].lines[0].score.unit === "book";
             let mate_before_move = _game[x].lines[0].score.unit === "mate";
@@ -63,7 +63,7 @@ class PGNFile {
             if (white)
                 prefix += moveno + ". ";
             else
-                prefix += moveno + (white ? ". " : ". ... ");
+                prefix += moveno + ". ... ";
             moveline += prefix;
 
             try {

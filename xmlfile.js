@@ -20,7 +20,7 @@ class XMLFile {
     writeGame(tags, game, callback) {
         let data = this.replaceAll(xmlgamestart, {"event": tags.Event, "date": tags.Date, "white": tags.White, "black": tags.Black, "result": tags.Result, "time_control": tags.TimeControl});
         let white = 1;
-        for(let x = 0 ; x < game.length ; x++) {
+        for(let x = 0 ; x < game.length - 1 ; x++) {
             let idx = game[x].lines.findIndex(line => line.pv.split(" ")[0] === game[x].alg);
             if(idx === -1) {
                 const nextline = game[x + 1] ? {...game[x + 1].lines[0]} : null;
@@ -36,20 +36,30 @@ class XMLFile {
             }
         }
 
-        game.forEach(move => {
-            let idx = move.lines.findIndex(line => line.pv.split(" ")[0] === move.alg);
-            if(idx === -1) {
-                console.log("MOVE NOT FOUND -- THIS SHOULD NEVER HAPPEN");
-                idx = move.lines.length - 1;
+        for(let x = 0 ; x < game.length - 1 ; x++) {
+            const move = game[x];
+//        game.forEach(move => {
+            if (move.alg !== "?") {
+                let idx = move.lines.findIndex(line => line.pv.split(" ")[0] === move.alg);
+                if (idx === -1) {
+                    console.log("MOVE NOT FOUND -- THIS SHOULD NEVER HAPPEN");
+                    idx = move.lines.length - 1;
+                }
+                data += this.replaceAll(xmlmovestart, {"white": white, "played": idx});
+                move.lines.forEach(line => {
+                    data += this.replaceAll(xmlpvstart, {
+                        san: line.pv.split(" ")[0],
+                        depth: line.depth,
+                        time: line.time,
+                        score: line.score.value
+                    });
+                    data += xmlpvend;
+                });
+                data += xmlmoveend;
+                white = (white === 0 ? 1 : 0);
             }
-            data += this.replaceAll(xmlmovestart, {"white": white, "played": idx});
-            move.lines.forEach(line => {
-                data += this.replaceAll(xmlpvstart, {san: line.pv.split(" ")[0], depth: line.depth, time: line.time, score: line.score.value});
-                data += xmlpvend;
-            });
-            data += xmlmoveend;
-            white = (white === 0 ? 1 : 0);
-        });
+//        });
+        }
         data += xmlgameend;
         this.writePart(data, callback);
         white = (white === 0 ? 1 : 0);

@@ -19,7 +19,8 @@ const sem = require("semaphore")(1);
 
 const pgn_filename = process.argv[2];
 
-let local_test = process.env.LOCALTEST === "true";
+const local_test = process.env.LOCALTEST === "true";
+const seconds_per_move = !!process.env.SPM ? parseInt(process.env.SPM) : 50;
 let active_tasks = 0;
 let taskArray;
 let games;
@@ -125,7 +126,7 @@ async function doit() {
     for (let x = 0; x < taskArray.length; x++) {
         const game = await getNextAvailableGame();
         console.log("Starting new game on task");
-        taskArray[x].processgame(game, game_result => handleGameResult(game.tags, JSON.parse(game_result)));
+        taskArray[x].processgame(seconds_per_move, game, game_result => handleGameResult(game.tags, JSON.parse(game_result)));
     }
 }
 
