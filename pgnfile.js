@@ -33,9 +33,9 @@ class PGNFile {
             const nextmove = _game[x + 1];
             let book = _game[x].lines[0].score.unit === "book";
             let mate_before_move = _game[x].lines[0].score.unit === "mate";
-            let score_before_move = _game[x].lines[0].score.value;
+            let score_before_move = (white ? 1: -1) * _game[x].lines[0].score.value;
             let mate_after_move = _game[x].lines[0].score.unit === "mate";
-            let score_after_move = (nextmove ? nextmove.lines[0].score.value : 0);
+            let score_after_move = (white ? -1: 1) * (nextmove ? nextmove.lines[0].score.value : 0);
 
             if(mate_before_move)
                 score_before_move = ((score_before_move < 0 ? -1 : 1) * 32768) - score_before_move;
