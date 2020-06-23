@@ -55,12 +55,12 @@ async function getAmazonReady() {
 
 async function shutdownAmazon() {
     return Promise.resolve();
-    // if(!local_test) {
-    //     console.log("Shutting down amazon");
-    //     await amazon.setSpotInstanceCount(0);
-    //     return amazon.shutdown();
-    // } else
-    //     return Promise.resolve();
+    if(!local_test) {
+        console.log("Shutting down amazon");
+        await amazon.setSpotInstanceCount(0);
+        return amazon.shutdown();
+    } else
+        return Promise.resolve();
 }
 
 async function getNextAvailableGame() {
