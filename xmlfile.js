@@ -27,18 +27,18 @@ class XMLFile {
                 if (!!nextline) {
                     nextline.pv = game[x].alg;
                     if(nextline.type === "mate" )
-                        nextline.score = 32768 - Math.abs(nextline.score.value) * (nextline.score.value < 0 ? -1 : 0);
-                    nextline.score *= -1;
+                        nextline.score.value = (32768 - Math.abs(nextline.score.value)) * (nextline.score.value < 0 ? -1 : 1);
+                    else
+                        nextline.score.value = -nextline.score.value;
                     game[x].lines.push(nextline);
                 } else {
-                    game[x].lines.push({pv: game[x].alg, score: 0, depth: 0, time: 0, nps: 0, multipv: 0, nodes: 0});
+                    game[x].lines.push({pv: game[x].alg, score: {value: 0}, depth: 0, time: 0, nps: 0, multipv: 0, nodes: 0});
                 }
             }
         }
 
         for(let x = 0 ; x < game.length - 1 ; x++) {
             const move = game[x];
-//        game.forEach(move => {
             if (move.alg !== "?") {
                 let idx = move.lines.findIndex(line => line.pv.split(" ")[0] === move.alg);
                 if (idx === -1) {
