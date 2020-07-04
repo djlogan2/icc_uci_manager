@@ -37,12 +37,9 @@ class Task {
         });
     }
 
-    async processgame(seconds_per_game, firstgame, callback) {
-        let game = firstgame;
-        do {
-            const engine_response = await this.sigh(seconds_per_game, game);
-            game = await callback(engine_response);
-        } while(!!game);
+    async processgame(seconds_per_game, game, callback) {
+        const engine_response = await this.sigh(seconds_per_game, game);
+        await callback(engine_response);
     }
 }
 

@@ -69,7 +69,7 @@ async function getNextAvailableGame() {
         sem.take(() => {
             const game = games.pop();
             sem.leave();
-            console.log("Next game being returned");
+            console.log("Next game being returned, OrigIndex=" + game.tags.OrigIndex);
             resolve(game);
         });
     });
@@ -97,23 +97,10 @@ async function writePGNFile(tags, game_result) {
 }
 
 async function handleGameResult(tags, game_result) {
-    console.log("Writing XML file for completed game");
+    console.log("Writing XML file for completed game, OrigIndex=" + tags.OrigIndex);
     await writeXMLFile(tags, game_result);
-    console.log("Writing PGN file for completed game");
+    console.log("Writing PGN file for completed game, OrigIndex=" + tags.OrigIndex);
     await writePGNFile(tags, game_result);
-    console.log("Getting next available game");
-    const game = await getNextAvailableGame();
-    if(!game) {
-        console.log("Tasks are dwindling, current=" + active_tasks);
-        if(--active_tasks === 0) {
-            console.log("All tasks complete, shutting down");
-            xmlfile.endFile();
-            await shutdownAmazon();
-        }
-    } else {
-        console.log("Setting task on doing next game");
-        return game;
-    }
 }
 
 async function doit() {
@@ -123,11 +110,29 @@ async function doit() {
     taskArray = await getAmazonReady();
     console.log("Amazon started with " + taskArray.length + " tasks");
     active_tasks = taskArray.length;
-    for (let x = 0; x < taskArray.length; x++) {
-        const game = await getNextAvailableGame();
-        console.log("Starting new game on task");
-        taskArray[x].processgame(seconds_per_move, game, game_result => handleGameResult(game.tags, JSON.parse(game_result)));
-    }
+
+    const really = async function(task) {
+        let nextgame = await getNextAvailableGame();
+        while(!!nextgame) {
+            console.log("Starting new game on task: OrigIndex=" + nextgame.tags.OrigIndex);
+            await task.processgame(seconds_per_move, nextgame, game_result => handleGameResult(nextgame.tags, JSON.parse(game_result)));
+            //--
+            console.log("Getting next available game");
+            nextgame = await getNextAvailableGame();
+            if (!nextgame) {
+                console.log("Tasks are dwindling, current=" + active_tasks);
+                if (--active_tasks === 0) {
+                    console.log("All tasks complete, shutting down");
+                    await xmlfile.endFile();
+                    await shutdownAmazon();
+                }
+            }
+        }
+        //--
+    };
+
+    for (let x = 0; x < taskArray.length; x++)
+        really(taskArray[x]);
 }
 
 //(new Amazon()).setSpotInstanceCount(0);
