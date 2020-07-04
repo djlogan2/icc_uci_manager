@@ -27,7 +27,6 @@ class Task {
                 res.setEncoding("utf-8");
                 res.on("data", (data) => engine_response += data);
                 res.on("end", () => {
-                    console.log(engine_response);
                     // ... create the pgn file and the xml file
                     resolve(engine_response);
                 });
