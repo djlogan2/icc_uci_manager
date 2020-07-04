@@ -6,10 +6,10 @@ class Task {
         this.port = port;
     }
 
-    sigh(seconds_per_game, game) {
+    sigh(seconds_per_game, multipv, game) {
         return new Promise(resolve => {
             const _movelist = game.variations.movelist.map(variation => variation.move).filter(move => !!move);
-            const request = JSON.stringify({go_options: {totaltime: seconds_per_game * 1000}, game: _movelist});
+            const request = JSON.stringify({multipv: multipv, go_options: {totaltime: seconds_per_game * 1000}, game: _movelist});
             //const movelist = JSON.stringify(_movelist);
             const options = {
                 timeout:  4 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* ms */,
@@ -36,8 +36,8 @@ class Task {
         });
     }
 
-    async processgame(seconds_per_game, game, callback) {
-        const engine_response = await this.sigh(seconds_per_game, game);
+    async processgame(seconds_per_game, multipv, game, callback) {
+        const engine_response = await this.sigh(seconds_per_game, multipv, game);
         await callback(engine_response);
     }
 }

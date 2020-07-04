@@ -21,6 +21,7 @@ const pgn_filename = process.argv[2];
 
 const local_test = process.env.LOCALTEST === "true";
 const seconds_per_move = !!process.env.SPM ? parseInt(process.env.SPM) : 10;
+const multipv = !!process.env.MPV ? parseInt(process.env.MPV) : 4;
 let active_tasks = 0;
 let taskArray;
 let games;
@@ -115,7 +116,7 @@ async function doit() {
         let nextgame = await getNextAvailableGame();
         while(!!nextgame) {
             console.log("Starting new game on task: OrigIndex=" + nextgame.tags.OrigIndex);
-            await task.processgame(seconds_per_move, nextgame, game_result => handleGameResult(nextgame.tags, JSON.parse(game_result)));
+            await task.processgame(seconds_per_move, multipv, nextgame, game_result => handleGameResult(nextgame.tags, JSON.parse(game_result)));
             console.log("Getting next available game");
             nextgame = await getNextAvailableGame();
             if (!nextgame) {
