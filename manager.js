@@ -54,7 +54,6 @@ async function getAmazonReady() {
 }
 
 async function shutdownAmazon() {
-    return Promise.resolve();
     if(!local_test) {
         console.log("Shutting down amazon");
         await amazon.setSpotInstanceCount(0);
@@ -69,7 +68,8 @@ async function getNextAvailableGame() {
         sem.take(() => {
             const game = games.pop();
             sem.leave();
-            console.log("Next game being returned, OrigIndex=" + game.tags.OrigIndex);
+            if(!!game)
+                console.log("Next game being returned, OrigIndex=" + game.tags.OrigIndex);
             resolve(game);
         });
     });
@@ -116,24 +116,27 @@ async function doit() {
         while(!!nextgame) {
             console.log("Starting new game on task: OrigIndex=" + nextgame.tags.OrigIndex);
             await task.processgame(seconds_per_move, nextgame, game_result => handleGameResult(nextgame.tags, JSON.parse(game_result)));
-            //--
             console.log("Getting next available game");
             nextgame = await getNextAvailableGame();
             if (!nextgame) {
+                active_tasks--;
                 console.log("Tasks are dwindling, current=" + active_tasks);
-                if (--active_tasks === 0) {
-                    console.log("All tasks complete, shutting down");
-                    await xmlfile.endFile();
-                    await shutdownAmazon();
-                }
+                if (active_tasks === 0)
+                    console.log("All tasks complete");
             }
         }
-        //--
     };
 
+    const promises = [];
+
     for (let x = 0; x < taskArray.length; x++)
-        really(taskArray[x]);
+        promises.push(really(taskArray[x]));
+
+    await Promise.all(promises);
+    console.log("No more games");
 }
 
 //(new Amazon()).setSpotInstanceCount(0);
-doit();
+doit()
+    .then(() => xmlfile.endFile())
+    .then(() => shutdownAmazon());

@@ -28,6 +28,8 @@ class XMLFile {
                     nextline.pv = game[x].alg;
                     if(nextline.type === "mate" )
                         nextline.score.value = (32768 - Math.abs(nextline.score.value)) * (nextline.score.value < 0 ? -1 : 1);
+                    else if(!nextline.score)
+                        nextline.score = {value: -32768};
                     else
                         nextline.score.value = -nextline.score.value;
                     game[x].lines.push(nextline);
