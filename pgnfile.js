@@ -57,7 +57,7 @@ class PGNFile {
                 score_after_move: score_after_move,
                 depth_after_move: nextmove && nextmove.lines.length ? nextmove.lines[0].depth : 0,
                 best_move: _game[x].lines[0].pv.split(" ")[0],
-                blunder: (white && score_before_move - score_after_move >= 100) || (!white && score_before_move - score_after_move <= -100)
+                blunder: (white && score_before_move - score_after_move >= 100) || (!white && score_after_move - score_before_move <= -100)
             });
             white = (white === 1 ? 0 : 1);
         }
