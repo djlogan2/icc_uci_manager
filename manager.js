@@ -20,7 +20,7 @@ const sem = require("semaphore")(1);
 const pgn_filename = process.argv[2];
 
 const local_test = process.env.LOCALTEST === "true";
-const seconds_per_move = !!process.env.SPM ? parseInt(process.env.SPM) : 50;
+const seconds_per_move = !!process.env.SPM ? parseInt(process.env.SPM) : 10;
 let active_tasks = 0;
 let taskArray;
 let games;
