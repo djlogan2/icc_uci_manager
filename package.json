@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "manager.js",
   "dependencies": {
-    "aws-sdk": "^2.693.0",
+    "aws-sdk": "^2.814.0",
     "moo": "^0.5.1",
     "sync-queue": "^0.0.2",
     "semaphore": "^1.1.0",
